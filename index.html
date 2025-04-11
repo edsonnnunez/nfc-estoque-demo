@@ -74,19 +74,23 @@
     .botoes {
       display: flex;
       justify-content: center;
+      flex-wrap: wrap;
       gap: 1rem;
       margin-top: 2rem;
     }
     button {
-      padding: 0.5rem 1rem;
-      background: #2563eb;
+      padding: 0.5rem 1.2rem;
+      background: linear-gradient(to right, #3b82f6, #1e3a8a);
       color: #fff;
+      font-weight: bold;
+      font-size: 0.95rem;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
+      transition: background 0.3s;
     }
     button:hover {
-      background: #1e40af;
+      background: linear-gradient(to right, #2563eb, #1e40af);
     }
   </style>
 </head>
@@ -134,6 +138,10 @@
   <div class="botoes">
     <button onclick="reporEstoque()">🔄 Repor Estoque</button>
     <button onclick="limparEstoque()">🗑️ Limpar Estoque</button>
+    <button onclick="window.location.href='?acao=remover-fibra'">➖ Remover Fibra</button>
+    <button onclick="window.location.href='?acao=remover-roteador'">➖ Remover Roteador</button>
+    <button onclick="window.location.href='?acao=remover-conector'">➖ Remover Conector</button>
+    <button onclick="window.location.href='?acao=remover-switch'">➖ Remover Switch</button>
   </div>
 
   <script>
