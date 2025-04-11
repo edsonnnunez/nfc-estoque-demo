@@ -101,9 +101,23 @@
     button:hover {
       background: linear-gradient(to right, #2563eb, #1e40af);
     }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #facc15;
+      color: #0b0c2a;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      font-weight: bold;
+      display: none;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
+  <div class="toast" id="toast"></div>
   <header>
     <div class="logo-container">
       <img src="https://assinelm.com/wp-content/uploads/2023/06/LOGO.png" alt="Logo" />
@@ -187,6 +201,13 @@
     }
 
     function notificar(mensagem) {
+      const toast = document.getElementById("toast");
+      toast.textContent = mensagem;
+      toast.style.display = "block";
+      setTimeout(() => {
+        toast.style.display = "none";
+      }, 4000);
+
       if (Notification.permission === "granted") {
         new Notification("📦 Estoque Atualizado", { body: mensagem });
       }
