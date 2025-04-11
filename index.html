@@ -63,6 +63,16 @@
       display: flex;
       flex-direction: column;
     }
+    #reporBtn {
+      display: none;
+      margin: 2rem auto;
+      padding: 0.5rem 1rem;
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -105,6 +115,8 @@
       </div>
     </div>
   </div>
+
+  <button id="reporBtn" onclick="reporEstoque()">🔄 Repor Estoque</button>
 
   <script>
     const firebaseConfig = {
@@ -154,6 +166,14 @@
           alert("⚠️ Estoque esgotado!");
         }
       });
+    }
+
+    function reporEstoque() {
+      refs.fibra.set(20);
+      refs.roteador.set(10);
+      refs.conector.set(15);
+      refs.switch.set(8);
+      alert("✅ Estoque foi reposto com sucesso!");
     }
   </script>
 </body>
