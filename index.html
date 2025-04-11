@@ -63,6 +63,7 @@
       font-weight: bold;
       font-size: 1rem;
       color: #ffffff;
+      display: inline-block;
     }
     .info {
       display: flex;
@@ -94,13 +95,22 @@
     }
 
     .animar {
-      animation: pulo 0.4s ease;
+      animation: pulo 0.5s ease-in-out;
     }
 
     @keyframes pulo {
-      0% { transform: scale(1); color: #facc15; }
-      50% { transform: scale(1.4); color: #a3e635; }
-      100% { transform: scale(1); color: #ffffff; }
+      0% {
+        transform: scale(1);
+        color: #facc15;
+      }
+      50% {
+        transform: scale(1.8);
+        color: #4ade80;
+      }
+      100% {
+        transform: scale(1);
+        color: #ffffff;
+      }
     }
   </style>
 </head>
@@ -187,26 +197,12 @@
 
     function animarNumero(elemento, valorFinal) {
       const valorAtual = parseInt(elemento.textContent);
-      const duracao = 300;
-      const incremento = (valorFinal - valorAtual) / (duracao / 20);
-      let atual = valorAtual;
+      if (valorAtual === valorFinal) return;
 
-      clearInterval(elemento._intervalo);
-
+      elemento.classList.remove("animar");
+      void elemento.offsetWidth;
       elemento.classList.add("animar");
-
-      elemento._intervalo = setInterval(() => {
-        atual += incremento;
-        if ((incremento > 0 && atual >= valorFinal) || (incremento < 0 && atual <= valorFinal)) {
-          atual = valorFinal;
-          clearInterval(elemento._intervalo);
-        }
-        elemento.textContent = Math.round(atual);
-      }, 20);
-
-      setTimeout(() => {
-        elemento.classList.remove("animar");
-      }, 400);
+      elemento.textContent = valorFinal;
     }
 
     refs.fibra.on("value", (snap) => {
