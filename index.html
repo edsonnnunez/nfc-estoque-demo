@@ -196,7 +196,7 @@
       const qtd = snap.val();
       document.getElementById("quantidadeFibra").textContent = qtd;
       atualizarClasseEstoque("produto-fibra", qtd);
-      notificar(`Nova quantidade de Cabo de Fibra Óptica: ${qtd}`);
+      notificar("O estoque de cabo óptico houve movimentação. Nova quantidade: " + qtd);
     });
     refs.roteador.on("value", (snap) => {
       const qtd = snap.val();
@@ -262,7 +262,6 @@
       alert("🚫 Estoque foi zerado!");
     }
 
-    // Solicitar permissão de notificação
     if ("Notification" in window && Notification.permission !== "granted") {
       Notification.requestPermission();
     }
