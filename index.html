@@ -3,77 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Saída de Produto - Demo NFC</title>
+  <title>Simulação de Estoque - NFC</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f2f2f2;
+      background: #e8f0fe;
+      color: #003366;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      padding: 2rem;
+    }
+    header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header img {
+      width: 100px;
+      height: 100px;
+      margin-bottom: 1rem;
+    }
+    .estoque {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+      width: 100%;
+      max-width: 1000px;
     }
     .card {
-      background: white;
-      padding: 2rem;
+      background: #ffffff;
+      padding: 1.5rem;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
-      max-width: 400px;
-      position: relative;
+      border: 2px solid #ffd700;
     }
-    .status {
-      margin-top: 1.5rem;
-      padding: 1rem;
-      background-color: #e0ffe0;
-      color: #007a00;
-      border: 1px solid #00cc00;
-      border-radius: 8px;
-    }
-    .produto {
-      font-size: 18px;
-      margin-bottom: 10px;
-    }
-    .imagem-produto {
-      width: 200px;
-      transition: transform 1.2s ease-out;
-    }
-    .saida {
-      transform: translateX(350px) rotate(10deg);
-      opacity: 0;
+    .card h3 {
+      margin: 0.5rem 0;
+      color: #004080;
     }
     .botao {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background-color: #0077cc;
+      margin-top: 10px;
+      padding: 10px 18px;
+      background-color: #0047ab;
       color: white;
       border: none;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 8px;
+      font-size: 14px;
       cursor: pointer;
+    }
+    .botao:hover {
+      background-color: #003080;
+    }
+    .imagem-produto {
+      width: 100px;
+      height: auto;
+      margin: 0.5rem 0;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h2>Simulação NFC - Saída de Produto</h2>
-    <p class="produto"><strong>Produto:</strong> Cabo de Fibra Óptica 20m</p>
-    <img id="imagemProduto" src="https://cdn-icons-png.flaticon.com/512/1606/1606216.png" alt="Produto" class="imagem-produto">
-    <button class="botao" onclick="removerProduto()">Simular Saída</button>
-    <div class="status" id="statusTexto" style="display:none">
-      ✅ 1 unidade removida do estoque!
+  <header>
+    <img src="https://th.bing.com/th/id/OIP.FvtIQ-JIZsoHXCvzG1rj9QHaHa?rs=1&pid=ImgDetMain" alt="Logo" />
+    <h1>Gestão de Estoque com NFC - Demonstração</h1>
+    <p>Simulação da saída automática de produto via leitura NFC</p>
+  </header>
+
+  <div class="estoque">
+    <div class="card" id="produto-fibra">
+      <img src="https://cdn-icons-png.flaticon.com/512/1606/1606216.png" class="imagem-produto" />
+      <h3>Cabo de Fibra Óptica 20m</h3>
+      <p>Estoque: <span id="quantidadeFibra">20</span></p>
+      <button class="botao" onclick="removerFibra()">Simular Leitura NFC</button>
+    </div>
+
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/2760/2760630.png" class="imagem-produto" />
+      <h3>Roteador Wi-Fi</h3>
+      <p>Estoque: 12</p>
+    </div>
+
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/3242/3242250.png" class="imagem-produto" />
+      <h3>Conector Óptico</h3>
+      <p>Estoque: 34</p>
+    </div>
+
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/1473/1473686.png" class="imagem-produto" />
+      <h3>Switch Ethernet</h3>
+      <p>Estoque: 7</p>
     </div>
   </div>
 
   <script>
-    function removerProduto() {
-      const img = document.getElementById("imagemProduto");
-      const status = document.getElementById("statusTexto");
-      img.classList.add("saida");
-      setTimeout(() => {
-        status.style.display = "block";
-      }, 1200);
+    function removerFibra() {
+      let quantidadeSpan = document.getElementById("quantidadeFibra");
+      let atual = parseInt(quantidadeSpan.textContent);
+      if (atual > 0) {
+        quantidadeSpan.textContent = atual - 1;
+        alert("✅ 1 unidade de Cabo de Fibra Óptica foi removida do estoque!");
+      } else {
+        alert("⚠️ Estoque esgotado!");
+      }
     }
   </script>
 </body>
