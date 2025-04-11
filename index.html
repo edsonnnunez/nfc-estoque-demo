@@ -1,221 +1,153 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simulação de Estoque - NFC</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: #0b0c2a;
-      color: #ffffff;
-      padding: 2rem;
-    }
-    header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    header img {
-      width: 220px;
-      height: auto;
-      margin-bottom: 1rem;
-    }
-    h1 {
-      color: #facc15;
-      animation: fadeInDown 1s ease-in-out;
-    }
-    p {
-      color: #e0e0e0;
-      animation: fadeIn 1.2s ease-in-out;
-    }
-    .estoque {
-      margin-top: 2rem;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .card {
-      background: #1c1e3a;
-      padding: 1rem 1.5rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-      border-left: 8px solid #facc15;
-      margin-bottom: 1rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      transition: transform 0.3s ease-in-out;
-      animation: fadeInUp 0.8s ease-in-out;
-    }
-    .card:hover {
-      transform: scale(1.02);
-    }
-    .card img {
-      width: 60px;
-      height: auto;
-    }
-    .card h3 {
-      margin: 0;
-      color: #facc15;
-    }
-    .estoque span {
-      font-weight: bold;
-      font-size: 1rem;
-      color: #ffffff;
-    }
-    .info {
-      display: flex;
-      flex-direction: column;
-    }
-    .low-stock {
-      border-left-color: #f87171;
-      animation: shakeX 0.5s;
-    }
-    .botoes {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 2rem;
-      animation: fadeInUp 1.5s ease-in-out;
-    }
-    button {
-      padding: 0.5rem 1.2rem;
-      background: linear-gradient(to right, #3b82f6, #1e3a8a);
-      color: #fff;
-      font-weight: bold;
-      font-size: 0.95rem;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    button:hover {
-      background: linear-gradient(to right, #2563eb, #1e40af);
-    }
-    .animacao-baixa {
-      animation: pulse 1s ease-in-out;
-    }
-    .notificacao {
-      position: fixed;
-      top: 1rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #22c55e;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: bold;
-      z-index: 1000;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-      animation: fadeInDown 0.5s ease-in-out;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <img src="https://i.imgur.com/pEowX5N.png" alt="Logo L&MTelecom" />
-    <h1>Gestão de Estoque com NFC - Demonstração</h1>
-    <p>Simulação da saída automática de produto via leitura NFC</p>
-  </header>
+import React, { useEffect, useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
+import { initializeApp } from "firebase/app";
+import {
+  getFirestore,
+  doc,
+  getDoc,
+  updateDoc,
+  onSnapshot,
+} from "firebase/firestore";
+import Image from "next/image";
 
-  <div id="notificacao" class="notificacao" style="display: none;"></div>
-  <audio id="somMovimentacao" src="https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3"></audio>
+const firebaseConfig = {
+  apiKey: "AIzaSyBD8otWcBJkodFDPG4CfV_Os5dgqIpvuZo",
+  authDomain: "nfc-estoque.firebaseapp.com",
+  projectId: "nfc-estoque",
+  storageBucket: "nfc-estoque.appspot.com",
+  messagingSenderId: "1033393838098",
+  appId: "1:1033393838098:web:a2c9cbfc5998c1214520cb",
+  measurementId: "G-XNV8PH1T9L",
+};
 
-  <div class="estoque" id="containerEstoque"></div>
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  <div class="botoes">
-    <button onclick="reporEstoque()">Repor Estoque</button>
-    <button onclick="limparEstoque()">Zerar Estoque</button>
-  </div>
+const produtosInfo = [
+  {
+    id: "fibra",
+    nome: "Cabo de Fibra Óptica",
+    icone: "https://cdn-icons-png.flaticon.com/512/649/649797.png",
+  },
+  {
+    id: "roteador",
+    nome: "Roteador Wi-Fi",
+    icone:
+      "https://th.bing.com/th/id/R.a737fac85e09e2710a60c6d7d292e048?rik=bB89%2bLdNcsVFIw&pid=ImgRaw&r=0",
+  },
+  {
+    id: "conector",
+    nome: "Conector Óptico",
+    icone: "https://cdn-icons-png.flaticon.com/512/4548/4548927.png",
+  },
+  {
+    id: "switch",
+    nome: "Switch Ethernet",
+    icone: "https://cdn-icons-png.flaticon.com/512/5344/5344212.png",
+  },
+];
 
-  <script>
-    const firebaseConfig = { /* ...config... */ };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+export default function EstoquePage() {
+  const [estoque, setEstoque] = useState({});
 
-    const produtos = [
-      { nome: "fibra", titulo: "Cabo de Fibra", imagem: "https://i.imgur.com/vn5L3Nn.png" },
-      { nome: "roteador", titulo: "Roteador", imagem: "https://i.imgur.com/M2RJ8vJ.png" },
-      { nome: "conector", titulo: "Conector", imagem: "https://i.imgur.com/4D0jYHc.png" },
-      { nome: "switch", titulo: "Switch", imagem: "https://i.imgur.com/kTL8S2Q.png" }
-    ];
-
-    const refs = {};
-    const container = document.getElementById("containerEstoque");
-
-    produtos.forEach(produto => {
-      refs[produto.nome] = db.ref("estoque/" + produto.nome);
-
-      const card = document.createElement("div");
-      card.className = "card";
-      card.id = `produto-${produto.nome}`;
-
-      card.innerHTML = `
-        <img src="${produto.imagem}" alt="${produto.titulo}" />
-        <div class="info">
-          <h3>${produto.titulo}</h3>
-          <span id="quantidade-${produto.nome}">0</span> unidades
-        </div>
-      `;
-
-      container.appendChild(card);
-
-      refs[produto.nome].on("value", snap => {
-        const qtd = snap.val();
-        document.getElementById("quantidade-" + produto.nome).textContent = qtd;
-        atualizarClasseEstoque("produto-" + produto.nome, qtd);
-        animarMovimentacao("produto-" + produto.nome);
-      });
+  useEffect(() => {
+    const unsub = onSnapshot(doc(db, "estoque", "produtos"), (doc) => {
+      setEstoque(doc.data());
     });
+    return () => unsub();
+  }, []);
 
-    function tocarSom() {
-      document.getElementById("somMovimentacao").play();
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const acao = urlParams.get("acao");
+    if (acao && estoque[acao] > 0) {
+      const produtoRef = doc(db, "estoque", "produtos");
+      updateDoc(produtoRef, {
+        [acao]: estoque[acao] - 1,
+      });
     }
+  }, [estoque]);
 
-    function mostrarNotificacao(msg, cor = "#22c55e") {
-      const el = document.getElementById("notificacao");
-      el.textContent = msg;
-      el.style.backgroundColor = cor;
-      el.style.display = "block";
-      setTimeout(() => el.style.display = "none", 3000);
-    }
-
-    function animarMovimentacao(cardId) {
-      const card = document.getElementById(cardId);
-      card.classList.add("animacao-baixa");
-      tocarSom();
-      setTimeout(() => card.classList.remove("animacao-baixa"), 1000);
-    }
-
-    function atualizarClasseEstoque(refId, quantidade) {
-      const card = document.getElementById(refId);
-      if (quantidade <= 5) card.classList.add("low-stock");
-      else card.classList.remove("low-stock");
-    }
-
-    function reporEstoque() {
-      refs.fibra.set(20);
-      refs.roteador.set(10);
-      refs.conector.set(15);
-      refs.switch.set(8);
-      mostrarNotificacao("✅ Estoque foi reposto com sucesso!");
-      tocarSom();
-    }
-
-    function limparEstoque() {
-      refs.fibra.set(0);
-      refs.roteador.set(0);
-      refs.conector.set(0);
-      refs.switch.set(0);
-      mostrarNotificacao("🚫 Estoque foi zerado!", "#ef4444");
-      tocarSom();
-    }
-  </script>
-</body>
-</html>
+  return (
+    <div className="min-h-screen bg-blue-950 text-white p-6">
+      <div className="flex items-center mb-8">
+        <Image
+          src="https://th.bing.com/th/id/OIP.FvtIQ-JIZsoHXCvzG1rj9QHaHa?rs=1&pid=ImgDetMain"
+          alt="Logo"
+          width={80}
+          height={80}
+          className="rounded-full mr-4"
+        />
+        <h1 className="text-3xl font-bold text-yellow-400">
+          Estoque Inteligente com NFC
+        </h1>
+      </div>
+      <div className="space-y-6">
+        {produtosInfo.map((produto) => (
+          <Card key={produto.id} className="bg-white text-black">
+            <CardContent className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-4">
+                <Image
+                  src={produto.icone}
+                  alt={produto.nome}
+                  width={40}
+                  height={40}
+                />
+                <div>
+                  <p className="font-semibold">{produto.nome}</p>
+                  <p className="text-sm text-gray-600">
+                    Quantidade: {estoque[produto.id] ?? 0}
+                  </p>
+                </div>
+              </div>
+              {estoque[produto.id] === 0 && (
+                <p className="text-red-600 font-semibold">Estoque Zerado</p>
+              )}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold mb-2 text-yellow-300">
+          Simuladores de Cartão NFC:
+        </h2>
+        <ul className="space-y-2">
+          <li>
+            <a
+              href="?acao=remover-fibra"
+              className="text-yellow-300 underline"
+            >
+              NFC - Cabo de Fibra Óptica
+            </a>
+          </li>
+          <li>
+            <a
+              href="?acao=remover-roteador"
+              className="text-yellow-300 underline"
+            >
+              NFC - Roteador Wi-Fi
+            </a>
+          </li>
+          <li>
+            <a
+              href="?acao=remover-conector"
+              className="text-yellow-300 underline"
+            >
+              NFC - Conector Óptico
+            </a>
+          </li>
+          <li>
+            <a
+              href="?acao=remover-switch"
+              className="text-yellow-300 underline"
+            >
+              NFC - Switch Ethernet
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  );
+}
