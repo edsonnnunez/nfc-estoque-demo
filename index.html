@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Simulação de Estoque - NFC</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -75,7 +77,7 @@
       <img src="https://cdn-icons-png.flaticon.com/512/649/649797.png" />
       <div class="info">
         <h3>Cabo de Fibra Óptica 20m</h3>
-        <p>Estoque: <span id="quantidadeFibra">20</span></p>
+        <p>Estoque: <span id="quantidadeFibra">0</span></p>
       </div>
     </div>
 
@@ -83,7 +85,7 @@
       <img src="https://th.bing.com/th/id/R.a737fac85e09e2710a60c6d7d292e048?rik=bB89%2bLdNcsVFIw&pid=ImgRaw&r=0" />
       <div class="info">
         <h3>Roteador Wi-Fi</h3>
-        <p>Estoque: <span>12</span></p>
+        <p>Estoque: <span id="quantidadeRoteador">0</span></p>
       </div>
     </div>
 
@@ -91,7 +93,7 @@
       <img src="https://cdn-icons-png.flaticon.com/512/4548/4548927.png" />
       <div class="info">
         <h3>Conector Óptico</h3>
-        <p>Estoque: <span>34</span></p>
+        <p>Estoque: <span id="quantidadeConector">0</span></p>
       </div>
     </div>
 
@@ -99,36 +101,60 @@
       <img src="https://cdn-icons-png.flaticon.com/512/5344/5344212.png" />
       <div class="info">
         <h3>Switch Ethernet</h3>
-        <p>Estoque: <span>7</span></p>
+        <p>Estoque: <span id="quantidadeSwitch">0</span></p>
       </div>
     </div>
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      const acao = urlParams.get("acao");
+    const firebaseConfig = {
+      apiKey: "AIzaSyBD8otWcBJkodFDPG4CfV_Os5dgqIpvuZo",
+      authDomain: "nfc-estoque.firebaseapp.com",
+      projectId: "nfc-estoque",
+      storageBucket: "nfc-estoque.firebasestorage.app",
+      messagingSenderId: "1033393838098",
+      appId: "1:1033393838098:web:a2c9cbfc5998c1214520cb",
+      measurementId: "G-XNV8PH1T9L",
+      databaseURL: "https://nfc-estoque-default-rtdb.firebaseio.com"
+    };
 
-      // Armazenar e recuperar do localStorage
-      let estoqueFibra = localStorage.getItem("estoqueFibra");
-      if (!estoqueFibra) {
-        estoqueFibra = 20;
-        localStorage.setItem("estoqueFibra", estoqueFibra);
-      }
-      document.getElementById("quantidadeFibra").textContent = estoqueFibra;
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-      if (acao === "remover-fibra") {
-        let atual = parseInt(localStorage.getItem("estoqueFibra"));
+    const refs = {
+      fibra: db.ref("estoque/fibra"),
+      roteador: db.ref("estoque/roteador"),
+      conector: db.ref("estoque/conector"),
+      switch: db.ref("estoque/switch")
+    };
+
+    refs.fibra.on("value", (snap) => {
+      document.getElementById("quantidadeFibra").textContent = snap.val();
+    });
+    refs.roteador.on("value", (snap) => {
+      document.getElementById("quantidadeRoteador").textContent = snap.val();
+    });
+    refs.conector.on("value", (snap) => {
+      document.getElementById("quantidadeConector").textContent = snap.val();
+    });
+    refs.switch.on("value", (snap) => {
+      document.getElementById("quantidadeSwitch").textContent = snap.val();
+    });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const acao = urlParams.get("acao");
+
+    if (acao === "remover-fibra") {
+      refs.fibra.get().then((snap) => {
+        let atual = snap.val();
         if (atual > 0) {
-          atual--;
-          localStorage.setItem("estoqueFibra", atual);
-          document.getElementById("quantidadeFibra").textContent = atual;
+          refs.fibra.set(atual - 1);
           alert("✅ 1 unidade de Cabo de Fibra Óptica foi removida do estoque!");
         } else {
           alert("⚠️ Estoque esgotado!");
         }
-      }
-    });
+      });
+    }
   </script>
 </body>
 </html>
