@@ -92,13 +92,15 @@
     button:hover {
       background: linear-gradient(to right, #2563eb, #1e40af);
     }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+
+    .animar {
+      animation: pulo 0.4s ease;
     }
-    .card.pulsar {
-      animation: pulse 0.4s ease-in-out;
+
+    @keyframes pulo {
+      0% { transform: scale(1); color: #facc15; }
+      50% { transform: scale(1.4); color: #a3e635; }
+      100% { transform: scale(1); color: #ffffff; }
     }
   </style>
 </head>
@@ -183,60 +185,83 @@
       }
     }
 
+    function animarNumero(elemento, valorFinal) {
+      const valorAtual = parseInt(elemento.textContent);
+      const duracao = 300;
+      const incremento = (valorFinal - valorAtual) / (duracao / 20);
+      let atual = valorAtual;
+
+      clearInterval(elemento._intervalo);
+
+      elemento.classList.add("animar");
+
+      elemento._intervalo = setInterval(() => {
+        atual += incremento;
+        if ((incremento > 0 && atual >= valorFinal) || (incremento < 0 && atual <= valorFinal)) {
+          atual = valorFinal;
+          clearInterval(elemento._intervalo);
+        }
+        elemento.textContent = Math.round(atual);
+      }, 20);
+
+      setTimeout(() => {
+        elemento.classList.remove("animar");
+      }, 400);
+    }
+
     refs.fibra.on("value", (snap) => {
       const qtd = snap.val();
-      document.getElementById("quantidadeFibra").textContent = qtd;
+      const el = document.getElementById("quantidadeFibra");
+      animarNumero(el, qtd);
       atualizarClasseEstoque("produto-fibra", qtd);
     });
     refs.roteador.on("value", (snap) => {
       const qtd = snap.val();
-      document.getElementById("quantidadeRoteador").textContent = qtd;
+      const el = document.getElementById("quantidadeRoteador");
+      animarNumero(el, qtd);
       atualizarClasseEstoque("produto-roteador", qtd);
     });
     refs.conector.on("value", (snap) => {
       const qtd = snap.val();
-      document.getElementById("quantidadeConector").textContent = qtd;
+      const el = document.getElementById("quantidadeConector");
+      animarNumero(el, qtd);
       atualizarClasseEstoque("produto-conector", qtd);
     });
     refs.switch.on("value", (snap) => {
       const qtd = snap.val();
-      document.getElementById("quantidadeSwitch").textContent = qtd;
+      const el = document.getElementById("quantidadeSwitch");
+      animarNumero(el, qtd);
       atualizarClasseEstoque("produto-switch", qtd);
     });
 
-    function remover(ref, nome, refId) {
+    const urlParams = new URLSearchParams(window.location.search);
+    const acao = urlParams.get("acao");
+
+    function remover(ref, nome) {
       ref.get().then((snap) => {
         let atual = snap.val();
         if (atual > 0) {
           ref.set(atual - 1);
-          const audio = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-click-melodic-tone-1129.mp3");
-          audio.play();
-
-          const card = document.getElementById(refId);
-          card.classList.add("pulsar");
-          setTimeout(() => card.classList.remove("pulsar"), 400);
+          new Audio("https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3").play();
         } else {
           alert(`⚠️ Estoque de ${nome} esgotado!`);
         }
       });
     }
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const acao = urlParams.get("acao");
-
     if (acao) {
       switch (acao) {
         case "remover-fibra":
-          remover(refs.fibra, "Cabo de Fibra Óptica", "produto-fibra");
+          remover(refs.fibra, "Cabo de Fibra Óptica");
           break;
         case "remover-roteador":
-          remover(refs.roteador, "Roteador Wi-Fi", "produto-roteador");
+          remover(refs.roteador, "Roteador Wi-Fi");
           break;
         case "remover-conector":
-          remover(refs.conector, "Conector Óptico", "produto-conector");
+          remover(refs.conector, "Conector Óptico");
           break;
         case "remover-switch":
-          remover(refs.switch, "Switch Ethernet", "produto-switch");
+          remover(refs.switch, "Switch Ethernet");
           break;
       }
     }
