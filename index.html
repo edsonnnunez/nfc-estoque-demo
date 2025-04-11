@@ -7,8 +7,8 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #e8f0fe;
-      color: #003366;
+      background: #e6f2ff;
+      color: #001f4d;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -21,9 +21,12 @@
       align-items: center;
     }
     header img {
-      width: 100px;
-      height: 100px;
+      width: 160px;
+      height: 160px;
       margin-bottom: 1rem;
+    }
+    h1, p {
+      text-align: center;
     }
     .estoque {
       display: grid;
@@ -39,24 +42,11 @@
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
-      border: 2px solid #ffd700;
+      border: 3px solid #ffcc00;
     }
     .card h3 {
       margin: 0.5rem 0;
-      color: #004080;
-    }
-    .botao {
-      margin-top: 10px;
-      padding: 10px 18px;
-      background-color: #0047ab;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-    }
-    .botao:hover {
-      background-color: #003080;
+      color: #00264d;
     }
     .imagem-produto {
       width: 100px;
@@ -68,7 +58,7 @@
 <body>
   <header>
     <img src="https://th.bing.com/th/id/OIP.FvtIQ-JIZsoHXCvzG1rj9QHaHa?rs=1&pid=ImgDetMain" alt="Logo" />
-    <h1>Gestão de Estoque com NFC - Demonstração</h1>
+    <h1 style="color: #0047ab;">Gestão de Estoque com NFC - Demonstração</h1>
     <p>Simulação da saída automática de produto via leitura NFC</p>
   </header>
 
@@ -77,7 +67,6 @@
       <img src="https://cdn-icons-png.flaticon.com/512/1606/1606216.png" class="imagem-produto" />
       <h3>Cabo de Fibra Óptica 20m</h3>
       <p>Estoque: <span id="quantidadeFibra">20</span></p>
-      <button class="botao" onclick="removerFibra()">Simular Leitura NFC</button>
     </div>
 
     <div class="card">
@@ -100,16 +89,22 @@
   </div>
 
   <script>
-    function removerFibra() {
-      let quantidadeSpan = document.getElementById("quantidadeFibra");
-      let atual = parseInt(quantidadeSpan.textContent);
-      if (atual > 0) {
-        quantidadeSpan.textContent = atual - 1;
-        alert("✅ 1 unidade de Cabo de Fibra Óptica foi removida do estoque!");
-      } else {
-        alert("⚠️ Estoque esgotado!");
+    // Simulação de leitura NFC
+    document.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const acao = urlParams.get("acao");
+
+      if (acao === "remover-fibra") {
+        let quantidadeSpan = document.getElementById("quantidadeFibra");
+        let atual = parseInt(quantidadeSpan.textContent);
+        if (atual > 0) {
+          quantidadeSpan.textContent = atual - 1;
+          alert("✅ 1 unidade de Cabo de Fibra Óptica foi removida do estoque!");
+        } else {
+          alert("⚠️ Estoque esgotado!");
+        }
       }
-    }
+    });
   </script>
 </body>
 </html>
