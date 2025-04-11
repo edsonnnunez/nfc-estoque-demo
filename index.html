@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Simulação de Estoque - NFC</title>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
@@ -63,6 +63,11 @@
       font-weight: bold;
       font-size: 1rem;
       color: #ffffff;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+    .estoque span.animated {
+      color: #4ade80;
+      transform: scale(1.4);
     }
     .info {
       display: flex;
@@ -92,27 +97,6 @@
     button:hover {
       background: linear-gradient(to right, #2563eb, #1e40af);
     }
-    .animado {
-      animation: pulo 0.5s ease;
-    }
-    @keyframes pulo {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.3); }
-      100% { transform: scale(1); }
-    }
-    #notificacao {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: #facc15;
-      color: #000;
-      padding: 12px 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #000;
-      display: none;
-      font-weight: bold;
-      z-index: 999;
-    }
   </style>
 </head>
 <body>
@@ -130,7 +114,6 @@
         <p>Estoque: <span id="quantidadeFibra">0</span></p>
       </div>
     </div>
-
     <div class="card" id="produto-roteador">
       <img src="https://th.bing.com/th/id/R.a737fac85e09e2710a60c6d7d292e048?rik=bB89%2bLdNcsVFIw&pid=ImgRaw&r=0" title="Roteador Wi-Fi" />
       <div class="info">
@@ -138,7 +121,6 @@
         <p>Estoque: <span id="quantidadeRoteador">0</span></p>
       </div>
     </div>
-
     <div class="card" id="produto-conector">
       <img src="https://cdn-icons-png.flaticon.com/512/4548/4548927.png" title="Conector Óptico" />
       <div class="info">
@@ -146,7 +128,6 @@
         <p>Estoque: <span id="quantidadeConector">0</span></p>
       </div>
     </div>
-
     <div class="card" id="produto-switch">
       <img src="https://cdn-icons-png.flaticon.com/512/5344/5344212.png" title="Switch Ethernet" />
       <div class="info">
@@ -165,14 +146,12 @@
     <button onclick="window.location.href='?acao=remover-switch'">➖ Remover Switch</button>
   </div>
 
-  <div id="notificacao">Notificação</div>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyBD8otWcBJkodFDPG4CfV_Os5dgqIpvuZo",
       authDomain: "nfc-estoque.firebaseapp.com",
       projectId: "nfc-estoque",
-      storageBucket: "nfc-estoque.firebasestorage.app",
+      storageBucket: "nfc-estoque.appspot.com",
       messagingSenderId: "1033393838098",
       appId: "1:1033393838098:web:a2c9cbfc5998c1214520cb",
       measurementId: "G-XNV8PH1T9L",
@@ -189,6 +168,12 @@
       switch: db.ref("estoque/switch")
     };
 
+    function animarNumero(id) {
+      const el = document.getElementById(id);
+      el.classList.add("animated");
+      setTimeout(() => el.classList.remove("animated"), 500);
+    }
+
     function atualizarClasseEstoque(refId, quantidade) {
       const card = document.getElementById(refId);
       if (quantidade <= 5) {
@@ -198,67 +183,51 @@
       }
     }
 
-    function animarNumero(id) {
-      const span = document.getElementById(id);
-      span.classList.add("animado");
-      setTimeout(() => span.classList.remove("animado"), 500);
+    function mostrarNotificacao(titulo, mensagem) {
+      if (Notification.permission === "granted") {
+        new Notification(titulo, { body: mensagem });
+      }
     }
 
-    function atualizarQuantidade(id, qtd) {
-      const span = document.getElementById(id);
-      span.textContent = qtd;
-      animarNumero(id);
+    function verificarNotificacaoFibra(novaQtd) {
+      const antigaQtd = localStorage.getItem("qtdFibra");
+      if (antigaQtd !== null && antigaQtd != novaQtd) {
+        mostrarNotificacao("Movimentação de Estoque", "Estoque de cabo houve movimentação.");
+      }
+      localStorage.setItem("qtdFibra", novaQtd);
     }
 
-    // Notificações
+    // Atualizar estoques em tempo real
+    refs.fibra.on("value", (snap) => {
+      const qtd = snap.val();
+      document.getElementById("quantidadeFibra").textContent = qtd;
+      atualizarClasseEstoque("produto-fibra", qtd);
+      animarNumero("quantidadeFibra");
+      verificarNotificacaoFibra(qtd);
+    });
+    refs.roteador.on("value", (snap) => {
+      const qtd = snap.val();
+      document.getElementById("quantidadeRoteador").textContent = qtd;
+      atualizarClasseEstoque("produto-roteador", qtd);
+      animarNumero("quantidadeRoteador");
+    });
+    refs.conector.on("value", (snap) => {
+      const qtd = snap.val();
+      document.getElementById("quantidadeConector").textContent = qtd;
+      atualizarClasseEstoque("produto-conector", qtd);
+      animarNumero("quantidadeConector");
+    });
+    refs.switch.on("value", (snap) => {
+      const qtd = snap.val();
+      document.getElementById("quantidadeSwitch").textContent = qtd;
+      atualizarClasseEstoque("produto-switch", qtd);
+      animarNumero("quantidadeSwitch");
+    });
+
+    // Solicita permissão para notificações
     if (Notification.permission !== "granted") {
       Notification.requestPermission();
     }
-
-    function notificarSistema(texto) {
-      if (Notification.permission === "granted") {
-        new Notification(texto);
-      }
-    }
-
-    function mostrarNotificacao(texto) {
-      const box = document.getElementById("notificacao");
-      box.textContent = texto;
-      box.style.display = "block";
-      setTimeout(() => box.style.display = "none", 3000);
-      notificarSistema(texto);
-    }
-
-    let valorAnteriorFibra = null;
-
-    refs.fibra.on("value", (snap) => {
-      const qtd = snap.val();
-      atualizarQuantidade("quantidadeFibra", qtd);
-      atualizarClasseEstoque("produto-fibra", qtd);
-
-      if (valorAnteriorFibra !== null && valorAnteriorFibra !== qtd) {
-        mostrarNotificacao("Estoque de cabo houve movimentação.");
-      }
-      valorAnteriorFibra = qtd;
-    });
-
-    refs.roteador.on("value", (snap) => {
-      const qtd = snap.val();
-      atualizarQuantidade("quantidadeRoteador", qtd);
-      atualizarClasseEstoque("produto-roteador", qtd);
-    });
-
-    refs.conector.on("value", (snap) => {
-      const qtd = snap.val();
-      atualizarQuantidade("quantidadeConector", qtd);
-      atualizarClasseEstoque("produto-conector", qtd);
-    });
-
-    refs.switch.on("value", (snap) => {
-      const qtd = snap.val();
-      atualizarQuantidade("quantidadeSwitch", qtd);
-      atualizarClasseEstoque("produto-switch", qtd);
-    });
 
     const urlParams = new URLSearchParams(window.location.search);
     const acao = urlParams.get("acao");
