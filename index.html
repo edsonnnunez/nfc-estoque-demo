@@ -20,9 +20,12 @@
       align-items: center;
     }
     header img {
-      width: 220px;
+      width: 300px;
       height: auto;
       margin-bottom: 1rem;
+      border-radius: 50%;
+      background: radial-gradient(circle, #ffffff 0%, #e5e5e5 70%, transparent 100%);
+      padding: 10px;
     }
     h1 {
       color: #facc15;
@@ -92,9 +95,23 @@
     button:hover {
       background: linear-gradient(to right, #2563eb, #1e40af);
     }
+    #notificacao {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #facc15;
+      color: #0b0c2a;
+      font-weight: bold;
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+      display: none;
+      z-index: 1000;
+    }
   </style>
 </head>
 <body>
+  <div id="notificacao"></div>
   <header>
     <img src="https://th.bing.com/th/id/OIP.FvtIQ-JIZsoHXCvzG1rj9QHaHa?rs=1&pid=ImgDetMain" alt="Logo" />
     <h1>Gestão de Estoque com NFC - Demonstração</h1>
@@ -166,6 +183,15 @@
       switch: db.ref("estoque/switch")
     };
 
+    function mostrarNotificacao(texto) {
+      const notif = document.getElementById("notificacao");
+      notif.textContent = texto;
+      notif.style.display = "block";
+      setTimeout(() => {
+        notif.style.display = "none";
+      }, 3000);
+    }
+
     function atualizarClasseEstoque(refId, quantidade) {
       const card = document.getElementById(refId);
       if (quantidade <= 5) {
@@ -179,21 +205,25 @@
       const qtd = snap.val();
       document.getElementById("quantidadeFibra").textContent = qtd;
       atualizarClasseEstoque("produto-fibra", qtd);
+      mostrarNotificacao("🟡 Estoque de Fibra atualizado para " + qtd);
     });
     refs.roteador.on("value", (snap) => {
       const qtd = snap.val();
       document.getElementById("quantidadeRoteador").textContent = qtd;
       atualizarClasseEstoque("produto-roteador", qtd);
+      mostrarNotificacao("🟡 Estoque de Roteador atualizado para " + qtd);
     });
     refs.conector.on("value", (snap) => {
       const qtd = snap.val();
       document.getElementById("quantidadeConector").textContent = qtd;
       atualizarClasseEstoque("produto-conector", qtd);
+      mostrarNotificacao("🟡 Estoque de Conector atualizado para " + qtd);
     });
     refs.switch.on("value", (snap) => {
       const qtd = snap.val();
       document.getElementById("quantidadeSwitch").textContent = qtd;
       atualizarClasseEstoque("produto-switch", qtd);
+      mostrarNotificacao("🟡 Estoque de Switch atualizado para " + qtd);
     });
 
     const urlParams = new URLSearchParams(window.location.search);
@@ -241,7 +271,7 @@
       refs.roteador.set(0);
       refs.conector.set(0);
       refs.switch.set(0);
-      alert("🚫 Estoque foi zerado!");
+      alert("🛛 Estoque foi zerado!");
     }
   </script>
 </body>
