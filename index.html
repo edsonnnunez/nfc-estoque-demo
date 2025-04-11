@@ -63,7 +63,6 @@
       font-weight: bold;
       font-size: 1rem;
       color: #ffffff;
-      display: inline-block;
     }
     .info {
       display: flex;
@@ -93,24 +92,30 @@
     button:hover {
       background: linear-gradient(to right, #2563eb, #1e40af);
     }
-
-    .animar {
-      animation: pulo 0.5s ease-in-out;
+    .highlight {
+      animation: pop 0.4s ease-out;
     }
-
-    @keyframes pulo {
-      0% {
-        transform: scale(1);
-        color: #facc15;
-      }
-      50% {
-        transform: scale(1.8);
-        color: #4ade80;
-      }
-      100% {
-        transform: scale(1);
-        color: #ffffff;
-      }
+    @keyframes pop {
+      0% { transform: scale(1); color: #facc15; }
+      50% { transform: scale(1.3); color: #ffffff; }
+      100% { transform: scale(1); color: #facc15; }
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #facc15;
+      color: #0b0c2a;
+      padding: 0.8rem 1.2rem;
+      border-radius: 8px;
+      font-weight: bold;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      animation: fadeIn 0.3s ease-out;
+      z-index: 9999;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -123,31 +128,28 @@
 
   <div class="estoque">
     <div class="card" id="produto-fibra">
-      <img src="https://cdn-icons-png.flaticon.com/512/649/649797.png" title="Cabo de Fibra Óptica" />
+      <img src="https://cdn-icons-png.flaticon.com/512/649/649797.png" />
       <div class="info">
         <h3>Cabo de Fibra Óptica 20m</h3>
         <p>Estoque: <span id="quantidadeFibra">0</span></p>
       </div>
     </div>
-
     <div class="card" id="produto-roteador">
-      <img src="https://th.bing.com/th/id/R.a737fac85e09e2710a60c6d7d292e048?rik=bB89%2bLdNcsVFIw&pid=ImgRaw&r=0" title="Roteador Wi-Fi" />
+      <img src="https://th.bing.com/th/id/R.a737fac85e09e2710a60c6d7d292e048?rik=bB89%2bLdNcsVFIw&pid=ImgRaw&r=0" />
       <div class="info">
         <h3>Roteador Wi-Fi</h3>
         <p>Estoque: <span id="quantidadeRoteador">0</span></p>
       </div>
     </div>
-
     <div class="card" id="produto-conector">
-      <img src="https://cdn-icons-png.flaticon.com/512/4548/4548927.png" title="Conector Óptico" />
+      <img src="https://cdn-icons-png.flaticon.com/512/4548/4548927.png" />
       <div class="info">
         <h3>Conector Óptico</h3>
         <p>Estoque: <span id="quantidadeConector">0</span></p>
       </div>
     </div>
-
     <div class="card" id="produto-switch">
-      <img src="https://cdn-icons-png.flaticon.com/512/5344/5344212.png" title="Switch Ethernet" />
+      <img src="https://cdn-icons-png.flaticon.com/512/5344/5344212.png" />
       <div class="info">
         <h3>Switch Ethernet</h3>
         <p>Estoque: <span id="quantidadeSwitch">0</span></p>
@@ -169,7 +171,7 @@
       apiKey: "AIzaSyBD8otWcBJkodFDPG4CfV_Os5dgqIpvuZo",
       authDomain: "nfc-estoque.firebaseapp.com",
       projectId: "nfc-estoque",
-      storageBucket: "nfc-estoque.firebasestorage.app",
+      storageBucket: "nfc-estoque.appspot.com",
       messagingSenderId: "1033393838098",
       appId: "1:1033393838098:web:a2c9cbfc5998c1214520cb",
       measurementId: "G-XNV8PH1T9L",
@@ -186,47 +188,44 @@
       switch: db.ref("estoque/switch")
     };
 
-    function atualizarClasseEstoque(refId, quantidade) {
-      const card = document.getElementById(refId);
-      if (quantidade <= 5) {
-        card.classList.add("low-stock");
-      } else {
-        card.classList.remove("low-stock");
-      }
+    function atualizarQuantidade(id, quantidade) {
+      const el = document.getElementById(id);
+      el.textContent = quantidade;
+      el.classList.add("highlight");
+      setTimeout(() => el.classList.remove("highlight"), 400);
     }
 
-    function animarNumero(elemento, valorFinal) {
-      const valorAtual = parseInt(elemento.textContent);
-      if (valorAtual === valorFinal) return;
+    function mostrarNotificacao(texto) {
+      const toast = document.createElement("div");
+      toast.className = "toast";
+      toast.textContent = texto;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
 
-      elemento.classList.remove("animar");
-      void elemento.offsetWidth;
-      elemento.classList.add("animar");
-      elemento.textContent = valorFinal;
+    function atualizarClasseEstoque(refId, quantidade) {
+      const card = document.getElementById(refId);
+      quantidade <= 5 ? card.classList.add("low-stock") : card.classList.remove("low-stock");
     }
 
     refs.fibra.on("value", (snap) => {
       const qtd = snap.val();
-      const el = document.getElementById("quantidadeFibra");
-      animarNumero(el, qtd);
+      atualizarQuantidade("quantidadeFibra", qtd);
       atualizarClasseEstoque("produto-fibra", qtd);
     });
     refs.roteador.on("value", (snap) => {
       const qtd = snap.val();
-      const el = document.getElementById("quantidadeRoteador");
-      animarNumero(el, qtd);
+      atualizarQuantidade("quantidadeRoteador", qtd);
       atualizarClasseEstoque("produto-roteador", qtd);
     });
     refs.conector.on("value", (snap) => {
       const qtd = snap.val();
-      const el = document.getElementById("quantidadeConector");
-      animarNumero(el, qtd);
+      atualizarQuantidade("quantidadeConector", qtd);
       atualizarClasseEstoque("produto-conector", qtd);
     });
     refs.switch.on("value", (snap) => {
       const qtd = snap.val();
-      const el = document.getElementById("quantidadeSwitch");
-      animarNumero(el, qtd);
+      atualizarQuantidade("quantidadeSwitch", qtd);
       atualizarClasseEstoque("produto-switch", qtd);
     });
 
@@ -239,6 +238,7 @@
         if (atual > 0) {
           ref.set(atual - 1);
           new Audio("https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3").play();
+          mostrarNotificacao(`${nome} removido do estoque.`);
         } else {
           alert(`⚠️ Estoque de ${nome} esgotado!`);
         }
@@ -267,7 +267,7 @@
       refs.roteador.set(10);
       refs.conector.set(15);
       refs.switch.set(8);
-      alert("✅ Estoque foi reposto com sucesso!");
+      mostrarNotificacao("✅ Estoque reposto com sucesso!");
     }
 
     function limparEstoque() {
@@ -275,7 +275,7 @@
       refs.roteador.set(0);
       refs.conector.set(0);
       refs.switch.set(0);
-      alert("🚫 Estoque foi zerado!");
+      mostrarNotificacao("🚫 Estoque zerado!");
     }
   </script>
 </body>
