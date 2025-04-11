@@ -127,12 +127,11 @@
   <div id="notificacao" class="notificacao" style="display: none;"></div>
   <audio id="somMovimentacao" src="https://assets.mixkit.co/sfx/preview/mixkit-software-interface-start-2574.mp3"></audio>
 
-  <div class="estoque">
-    <!-- Cards aqui -->
-  </div>
+  <div class="estoque" id="containerEstoque"></div>
 
   <div class="botoes">
-    <!-- Botões aqui -->
+    <button onclick="reporEstoque()">Repor Estoque</button>
+    <button onclick="limparEstoque()">Zerar Estoque</button>
   </div>
 
   <script>
@@ -140,12 +139,40 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const refs = {
-      fibra: db.ref("estoque/fibra"),
-      roteador: db.ref("estoque/roteador"),
-      conector: db.ref("estoque/conector"),
-      switch: db.ref("estoque/switch")
-    };
+    const produtos = [
+      { nome: "fibra", titulo: "Cabo de Fibra", imagem: "https://i.imgur.com/vn5L3Nn.png" },
+      { nome: "roteador", titulo: "Roteador", imagem: "https://i.imgur.com/M2RJ8vJ.png" },
+      { nome: "conector", titulo: "Conector", imagem: "https://i.imgur.com/4D0jYHc.png" },
+      { nome: "switch", titulo: "Switch", imagem: "https://i.imgur.com/kTL8S2Q.png" }
+    ];
+
+    const refs = {};
+    const container = document.getElementById("containerEstoque");
+
+    produtos.forEach(produto => {
+      refs[produto.nome] = db.ref("estoque/" + produto.nome);
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.id = `produto-${produto.nome}`;
+
+      card.innerHTML = `
+        <img src="${produto.imagem}" alt="${produto.titulo}" />
+        <div class="info">
+          <h3>${produto.titulo}</h3>
+          <span id="quantidade-${produto.nome}">0</span> unidades
+        </div>
+      `;
+
+      container.appendChild(card);
+
+      refs[produto.nome].on("value", snap => {
+        const qtd = snap.val();
+        document.getElementById("quantidade-" + produto.nome).textContent = qtd;
+        atualizarClasseEstoque("produto-" + produto.nome, qtd);
+        animarMovimentacao("produto-" + produto.nome);
+      });
+    });
 
     function tocarSom() {
       document.getElementById("somMovimentacao").play();
@@ -171,14 +198,6 @@
       if (quantidade <= 5) card.classList.add("low-stock");
       else card.classList.remove("low-stock");
     }
-
-    refs.fibra.on("value", (snap) => {
-      const qtd = snap.val();
-      document.getElementById("quantidadeFibra").textContent = qtd;
-      atualizarClasseEstoque("produto-fibra", qtd);
-      animarMovimentacao("produto-fibra");
-    });
-    // Repetir para os outros produtos...
 
     function reporEstoque() {
       refs.fibra.set(20);
