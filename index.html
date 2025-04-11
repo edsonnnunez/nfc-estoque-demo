@@ -109,11 +109,20 @@
       const urlParams = new URLSearchParams(window.location.search);
       const acao = urlParams.get("acao");
 
+      // Armazenar e recuperar do localStorage
+      let estoqueFibra = localStorage.getItem("estoqueFibra");
+      if (!estoqueFibra) {
+        estoqueFibra = 20;
+        localStorage.setItem("estoqueFibra", estoqueFibra);
+      }
+      document.getElementById("quantidadeFibra").textContent = estoqueFibra;
+
       if (acao === "remover-fibra") {
-        let quantidadeSpan = document.getElementById("quantidadeFibra");
-        let atual = parseInt(quantidadeSpan.textContent);
+        let atual = parseInt(localStorage.getItem("estoqueFibra"));
         if (atual > 0) {
-          quantidadeSpan.textContent = atual - 1;
+          atual--;
+          localStorage.setItem("estoqueFibra", atual);
+          document.getElementById("quantidadeFibra").textContent = atual;
           alert("✅ 1 unidade de Cabo de Fibra Óptica foi removida do estoque!");
         } else {
           alert("⚠️ Estoque esgotado!");
