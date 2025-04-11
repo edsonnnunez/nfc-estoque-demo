@@ -217,22 +217,25 @@
       const qtd = snap.val();
       document.getElementById("quantidadeFibra").textContent = qtd;
       atualizarClasseEstoque("produto-fibra", qtd);
-      notificar("O estoque de cabo óptico houve movimentação. Nova quantidade: " + qtd);
+      notificar("Houve movimentação no estoque");
     });
     refs.roteador.on("value", (snap) => {
       const qtd = snap.val();
       document.getElementById("quantidadeRoteador").textContent = qtd;
       atualizarClasseEstoque("produto-roteador", qtd);
+      notificar("Houve movimentação no estoque");
     });
     refs.conector.on("value", (snap) => {
       const qtd = snap.val();
       document.getElementById("quantidadeConector").textContent = qtd;
       atualizarClasseEstoque("produto-conector", qtd);
+      notificar("Houve movimentação no estoque");
     });
     refs.switch.on("value", (snap) => {
       const qtd = snap.val();
       document.getElementById("quantidadeSwitch").textContent = qtd;
       atualizarClasseEstoque("produto-switch", qtd);
+      notificar("Houve movimentação no estoque");
     });
 
     const urlParams = new URLSearchParams(window.location.search);
