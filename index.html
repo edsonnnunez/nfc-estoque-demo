@@ -14,175 +14,268 @@
       color: #ffffff;
       padding: 2rem;
     }
-
     header {
       display: flex;
       flex-direction: column;
       align-items: center;
-      margin-bottom: 2rem;
-      position: relative;
     }
-
-    .logo-container {
-      position: relative;
-      padding: 60px;
-    }
-
-    .logo-container::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 80%);
-      filter: blur(60px);
-      z-index: 0;
-    }
-
-    .logo-container::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 320px;
-      height: 320px;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 80%);
-      filter: blur(50px);
-      z-index: 0;
-    }
-
     header img {
-      width: 320px;
+      width: 220px;
       height: auto;
-      display: block;
-      position: relative;
-      z-index: 1;
+      margin-bottom: 1rem;
     }
-
     h1 {
       color: #facc15;
     }
-
     p {
       color: #e0e0e0;
     }
-
-    .card {
-      background-color: #1f2937;
-      border-radius: 1rem;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-      padding: 2rem;
-      margin: 1rem auto;
-      max-width: 500px;
-      text-align: center;
-      transition: transform 0.3s;
-    }
-
-    .card:hover {
-      transform: scale(1.03);
-    }
-
-    .card h2 {
-      color: #38bdf8;
-    }
-
     .estoque {
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin: 1rem 0;
+      margin-top: 2rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
     }
-
-    .btn {
-      background-color: #3b82f6;
-      border: none;
-      padding: 0.8rem 1.2rem;
-      border-radius: 0.5rem;
-      color: white;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background-color 0.3s;
-    }
-
-    .btn:hover {
-      background-color: #2563eb;
-    }
-
-    .notification {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background-color: #22c55e;
-      color: white;
+    .card {
+      background: #1c1e3a;
       padding: 1rem 1.5rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-      opacity: 0;
-      transform: translateY(20px);
-      transition: opacity 0.5s ease, transform 0.5s ease;
-      z-index: 1000;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+      border-left: 8px solid #facc15;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: transform 0.2s ease-in-out;
     }
-
-    .notification.show {
-      opacity: 1;
-      transform: translateY(0);
+    .card:hover {
+      transform: scale(1.02);
+    }
+    .card img {
+      width: 60px;
+      height: auto;
+    }
+    .card h3 {
+      margin: 0;
+      color: #facc15;
+    }
+    .estoque span {
+      font-weight: bold;
+      font-size: 1rem;
+      color: #ffffff;
+      transition: transform 0.3s ease;
+    }
+    .highlight {
+      animation: bounce 0.6s ease;
+    }
+    @keyframes bounce {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.4); }
+      100% { transform: scale(1); }
+    }
+    .info {
+      display: flex;
+      flex-direction: column;
+    }
+    .low-stock {
+      border-left-color: #f87171;
+    }
+    .botoes {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    button {
+      padding: 0.5rem 1.2rem;
+      background: linear-gradient(to right, #3b82f6, #1e3a8a);
+      color: #fff;
+      font-weight: bold;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: linear-gradient(to right, #2563eb, #1e40af);
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="logo-container">
-      <img src="https://assinelm.com/wp-content/uploads/2023/06/LOGO.png" alt="Logo Assinelm">
-    </div>
+    <img src="https://assinelm.com/wp-content/uploads/2023/06/LOGO.png" alt="Logo" />
     <h1>Gestão de Estoque com NFC - Demonstração</h1>
     <p>Simulação da saída automática de produto via leitura NFC</p>
   </header>
 
-  <div class="card">
-    <h2>Produto: Cabo USB</h2>
-    <div class="estoque" id="estoque">Carregando...</div>
-    <button class="btn" onclick="movimentarEstoque()">Simular Leitura NFC</button>
+  <div class="estoque">
+    <div class="card" id="produto-fibra">
+      <img src="https://cdn-icons-png.flaticon.com/512/649/649797.png" title="Cabo de Fibra Óptica" />
+      <div class="info">
+        <h3>Cabo de Fibra Óptica 20m</h3>
+        <p>Estoque: <span id="quantidadeFibra">0</span></p>
+      </div>
+    </div>
+
+    <div class="card" id="produto-roteador">
+      <img src="https://th.bing.com/th/id/R.a737fac85e09e2710a60c6d7d292e048?rik=bB89%2bLdNcsVFIw&pid=ImgRaw&r=0" title="Roteador Wi-Fi" />
+      <div class="info">
+        <h3>Roteador Wi-Fi</h3>
+        <p>Estoque: <span id="quantidadeRoteador">0</span></p>
+      </div>
+    </div>
+
+    <div class="card" id="produto-conector">
+      <img src="https://cdn-icons-png.flaticon.com/512/4548/4548927.png" title="Conector Óptico" />
+      <div class="info">
+        <h3>Conector Óptico</h3>
+        <p>Estoque: <span id="quantidadeConector">0</span></p>
+      </div>
+    </div>
+
+    <div class="card" id="produto-switch">
+      <img src="https://cdn-icons-png.flaticon.com/512/5344/5344212.png" title="Switch Ethernet" />
+      <div class="info">
+        <h3>Switch Ethernet</h3>
+        <p>Estoque: <span id="quantidadeSwitch">0</span></p>
+      </div>
+    </div>
   </div>
 
-  <div class="notification" id="notificacao">Estoque de cabo houve movimentação</div>
+  <div class="botoes">
+    <button onclick="reporEstoque()">🔄 Repor Estoque</button>
+    <button onclick="limparEstoque()">🗑️ Limpar Estoque</button>
+    <button onclick="window.location.href='?acao=remover-fibra'">➖ Remover Fibra</button>
+    <button onclick="window.location.href='?acao=remover-roteador'">➖ Remover Roteador</button>
+    <button onclick="window.location.href='?acao=remover-conector'">➖ Remover Conector</button>
+    <button onclick="window.location.href='?acao=remover-switch'">➖ Remover Switch</button>
+  </div>
 
   <script>
     const firebaseConfig = {
-      apiKey: "SUA_API_KEY",
-      authDomain: "SEU_DOMINIO.firebaseapp.com",
-      databaseURL: "https://SEU_PROJETO.firebaseio.com",
-      projectId: "SEU_PROJETO",
-      storageBucket: "SEU_BUCKET.appspot.com",
-      messagingSenderId: "SEU_SENDER_ID",
-      appId: "SEU_APP_ID"
+      apiKey: "AIzaSyBD8otWcBJkodFDPG4CfV_Os5dgqIpvuZo",
+      authDomain: "nfc-estoque.firebaseapp.com",
+      projectId: "nfc-estoque",
+      storageBucket: "nfc-estoque.appspot.com",
+      messagingSenderId: "1033393838098",
+      appId: "1:1033393838098:web:a2c9cbfc5998c1214520cb",
+      measurementId: "G-XNV8PH1T9L",
+      databaseURL: "https://nfc-estoque-default-rtdb.firebaseio.com"
     };
 
     firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-    const estoqueRef = database.ref('produtos/caboUSB/estoque');
-    const estoqueEl = document.getElementById('estoque');
+    const db = firebase.database();
 
-    function mostrarNotificacao() {
-      const noti = document.getElementById('notificacao');
-      noti.classList.add('show');
-      setTimeout(() => noti.classList.remove('show'), 3000);
+    const refs = {
+      fibra: db.ref("estoque/fibra"),
+      roteador: db.ref("estoque/roteador"),
+      conector: db.ref("estoque/conector"),
+      switch: db.ref("estoque/switch")
+    };
+
+    function animarNumero(id) {
+      const el = document.getElementById(id);
+      el.classList.add("highlight");
+      setTimeout(() => el.classList.remove("highlight"), 600);
     }
 
-    function movimentarEstoque() {
-      estoqueRef.once('value').then(snapshot => {
-        const atual = snapshot.val();
-        const novoValor = atual - 1;
-        estoqueRef.set(novoValor);
-        mostrarNotificacao();
+    function mostrarNotificacao(titulo, corpo) {
+      if (Notification.permission === "granted") {
+        new Notification(titulo, { body: corpo });
+      }
+    }
+
+    function atualizarClasseEstoque(refId, quantidade) {
+      const card = document.getElementById(refId);
+      if (quantidade <= 5) {
+        card.classList.add("low-stock");
+      } else {
+        card.classList.remove("low-stock");
+      }
+    }
+
+    refs.fibra.on("value", (snap) => {
+      const qtd = snap.val();
+      document.getElementById("quantidadeFibra").textContent = qtd;
+      animarNumero("quantidadeFibra");
+      atualizarClasseEstoque("produto-fibra", qtd);
+    });
+    refs.roteador.on("value", (snap) => {
+      const qtd = snap.val();
+      document.getElementById("quantidadeRoteador").textContent = qtd;
+      animarNumero("quantidadeRoteador");
+      atualizarClasseEstoque("produto-roteador", qtd);
+    });
+    refs.conector.on("value", (snap) => {
+      const qtd = snap.val();
+      document.getElementById("quantidadeConector").textContent = qtd;
+      animarNumero("quantidadeConector");
+      atualizarClasseEstoque("produto-conector", qtd);
+    });
+    refs.switch.on("value", (snap) => {
+      const qtd = snap.val();
+      document.getElementById("quantidadeSwitch").textContent = qtd;
+      animarNumero("quantidadeSwitch");
+      atualizarClasseEstoque("produto-switch", qtd);
+    });
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const acao = urlParams.get("acao");
+
+    function remover(ref, nome, idSpan, tipo) {
+      ref.get().then((snap) => {
+        let atual = snap.val();
+        if (atual > 0) {
+          ref.set(atual - 1);
+          new Audio("https://assets.mixkit.co/sfx/preview/mixkit-correct-answer-tone-2870.mp3").play();
+          if (tipo === "fibra") {
+            mostrarNotificacao("Movimentação de Estoque", "Estoque de cabo houve movimentação");
+          }
+        } else {
+          alert(`⚠️ Estoque de ${nome} esgotado!`);
+        }
       });
     }
 
-    estoqueRef.on('value', snapshot => {
-      const valor = snapshot.val();
-      estoqueEl.textContent = valor + ' unidades';
-    });
+    if (acao) {
+      switch (acao) {
+        case "remover-fibra":
+          remover(refs.fibra, "Cabo de Fibra Óptica", "quantidadeFibra", "fibra");
+          break;
+        case "remover-roteador":
+          remover(refs.roteador, "Roteador Wi-Fi", "quantidadeRoteador");
+          break;
+        case "remover-conector":
+          remover(refs.conector, "Conector Óptico", "quantidadeConector");
+          break;
+        case "remover-switch":
+          remover(refs.switch, "Switch Ethernet", "quantidadeSwitch");
+          break;
+      }
+    }
+
+    function reporEstoque() {
+      refs.fibra.set(20);
+      refs.roteador.set(10);
+      refs.conector.set(15);
+      refs.switch.set(8);
+      alert("✅ Estoque foi reposto com sucesso!");
+    }
+
+    function limparEstoque() {
+      refs.fibra.set(0);
+      refs.roteador.set(0);
+      refs.conector.set(0);
+      refs.switch.set(0);
+      alert("🚫 Estoque foi zerado!");
+    }
+
+    // Solicita permissão de notificação ao carregar
+    if (Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
   </script>
 </body>
 </html>
