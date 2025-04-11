@@ -21,6 +21,7 @@
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
       max-width: 400px;
+      position: relative;
     }
     .status {
       margin-top: 1.5rem;
@@ -30,22 +31,50 @@
       border: 1px solid #00cc00;
       border-radius: 8px;
     }
+    .produto {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .imagem-produto {
+      width: 200px;
+      transition: transform 1.2s ease-out;
+    }
+    .saida {
+      transform: translateX(350px) rotate(10deg);
+      opacity: 0;
+    }
+    .botao {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div class="card">
-    <h2>Saída de Produto</h2>
-    <p><strong>Produto:</strong> Cabo de Fibra Óptica 20m</p>
-    <p><strong>ID:</strong> PROD00123</p>
-    <p><strong>Localização:</strong> Prateleira B - Nível 3</p>
-    <div class="status">
-      ✅ 1 unidade removida do estoque (simulado)
+    <h2>Simulação NFC - Saída de Produto</h2>
+    <p class="produto"><strong>Produto:</strong> Cabo de Fibra Óptica 20m</p>
+    <img id="imagemProduto" src="https://cdn-icons-png.flaticon.com/512/1606/1606216.png" alt="Produto" class="imagem-produto">
+    <button class="botao" onclick="removerProduto()">Simular Saída</button>
+    <div class="status" id="statusTexto" style="display:none">
+      ✅ 1 unidade removida do estoque!
     </div>
   </div>
 
   <script>
-    // Aqui poderia ser feita a simulação de atualização usando localStorage ou Firebase
-    console.log("Produto removido do estoque (simulação)");
+    function removerProduto() {
+      const img = document.getElementById("imagemProduto");
+      const status = document.getElementById("statusTexto");
+      img.classList.add("saida");
+      setTimeout(() => {
+        status.style.display = "block";
+      }, 1200);
+    }
   </script>
 </body>
 </html>
