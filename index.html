@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Saída de Produto - Demo NFC</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
+    }
+    .status {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      background-color: #e0ffe0;
+      color: #007a00;
+      border: 1px solid #00cc00;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Saída de Produto</h2>
+    <p><strong>Produto:</strong> Cabo de Fibra Óptica 20m</p>
+    <p><strong>ID:</strong> PROD00123</p>
+    <p><strong>Localização:</strong> Prateleira B - Nível 3</p>
+    <div class="status">
+      ✅ 1 unidade removida do estoque (simulado)
+    </div>
+  </div>
+
+  <script>
+    // Aqui poderia ser feita a simulação de atualização usando localStorage ou Firebase
+    console.log("Produto removido do estoque (simulação)");
+  </script>
+</body>
+</html>
